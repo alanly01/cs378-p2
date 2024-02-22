@@ -63,9 +63,8 @@ h2 {
 }
 
 .price {
-  display: grid;
+  display: flex;
   align-items: center;
-  grid-template-columns: 165px 55px;
 }
 
 p {
@@ -78,8 +77,27 @@ button{
   border-radius: 20px;
 }
 
+.price-controls {
+  display: flex;
+  align-items: center;
+  margin-left: 100px;
+}
+
+.price-controls p{
+  margin: 5px 5px;
+}
+
 #describe {
   font-weight: lighter;
   margin-top: 15px;
   margin-bottom: 15px;
+}
+
+.cart {
+  display: flex;
+  align-items: center;
+}
+
+.cart p{
+  padding-right: 150px;
 }

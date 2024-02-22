@@ -1,6 +1,8 @@
 import './App.css';
 import MenuItem from './components/MenuItem';
 import MenuHeader from './components/MenuHeader';
+import React, {useState} from 'react';
+
 
 // import 'bootstrap/dist/css/bootstrap.min.css'; // This imports bootstrap css styles. You can use bootstrap or your own classes by using the className attribute in your elements.
 
@@ -91,9 +93,72 @@ const menuHeader = [
 
 
 function App() {
+  const [counts, setCounts] = useState({});
+  const [total, totalCounts] = useState(0);
+
+  // Function to increment count for a specific menu item
+  const incrementCount = (id) => {
+    setCounts(prevCounts => {
+      const updatedCounts = {...prevCounts};
+      updatedCounts[id] = (updatedCounts[id] || 0) + 1;
+      calculateTotal(updatedCounts);
+      return updatedCounts;
+    });
+  };
+
+  // Function to decrement count for a specific menu item
+  const decrementCount = (id) => {
+    setCounts(prevCounts => {
+      const updatedCounts = {...prevCounts};
+      if (updatedCounts[id] && updatedCounts[id] > 0) {
+        updatedCounts[id] -= 1;
+      }
+      calculateTotal(updatedCounts);
+      return updatedCounts;
+    });
+  };
+
+  // Function to clear count for all menu items
+  const clearAllCounts = () => {
+    setCounts({});
+    totalCounts(0);
+  };
+
+  const calculateTotal = (updatedCounts) => {
+    let totalPrice = 0;
+    menuItems.forEach(item => {
+      totalPrice += (updatedCounts[item.id] || 0) * item.price;
+    });
+    totalCounts(totalPrice.toFixed(2));
+  };
+
+  const showAlert = () => {
+    if (Object.keys(counts).length === 0) {
+      alert("No items in cart");
+    } else {
+      let cartItems = [];
+      menuItems.forEach(item => {
+        if (counts[item.id]) {
+          cartItems.push({
+            title: item.title,
+            quantity: counts[item.id]
+          });
+        }
+      });
+  
+      if (cartItems.length > 0) {
+        let items = "Order Placed \n";
+        cartItems.forEach(cartItem => {
+          items += cartItem.quantity + " " +cartItem.title+"\n";
+        });
+        alert(items);
+      }
+    }
+  };
+  
+
   return (
     <div>
-
       <MenuHeader
         title={menuHeader[0].title}
         logo={menuHeader[0].logo}
@@ -101,16 +166,26 @@ function App() {
         description={menuHeader[0].description}
       />
 
-      <div className="menu">
-        {menuItems.map(item => (
-          <MenuItem
+<div className="menu">
+    {menuItems.map(item => (
+        <MenuItem
             key={item.id}
+            id={item.id}
             title={item.title}
             description={item.description}
             imageName={item.imageName}
             price={item.price}
-          />
-        ))}
+            count={counts[item.id] || 0}
+            incrementCount={() => incrementCount(item.id)}
+            decrementCount={() => decrementCount(item.id)}
+        />
+    ))}
+</div>
+
+      <div className="cart">
+        <p>Subtotal: ${total.toFixed(2)}</p>
+        <button onClick={showAlert}>Order</button>
+        <button onClick={clearAllCounts}>Clear All</button>
       </div>
     </div>
   );
